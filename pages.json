@@ -1,0 +1,53 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "最新"
+			}
+		},
+		{
+			"path": "pages/history/history",
+			"style": {
+				"navigationBarTitleText": "历史"
+			}
+		},
+		{
+			"path": "pages/welfare/welfare",
+			"style": {
+				"navigationBarTitleText": "萌妹子"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#FFFFFF",
+		"selectedColor": "#D33E42",
+		"backgroundColor": "#BFBFBF",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "最新",
+				"iconPath": "static/Tabbar/new.png",
+				"selectedIconPath": "static/Tabbar/new-select.png"
+			},
+			{
+				"pagePath": "pages/history/history",
+				"text": "历史",
+				"iconPath": "static/Tabbar/history.png",
+				"selectedIconPath": "static/Tabbar/history-select.png"
+			},
+			{
+				"pagePath": "pages/welfare/welfare",
+				"text": "萌妹子",
+				"iconPath": "static/Tabbar/welfare.png",
+				"selectedIconPath": "static/Tabbar/welfare-select.png"
+			}
+		]
+	}
+}
