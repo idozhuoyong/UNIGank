@@ -5,18 +5,39 @@
 			<view class="wrap-item">{{item.publishedAt}}</view>
 			<view class="wrap-item">{{item.title}}</view>
 		</view>
+		
+		<empty-view v-if="isShowEmptyView" @onHandleReloadData="onHandleReloadData"></empty-view>
 	</view>
 </template>
 
 <script>
 	import helper from '../../common/helper.js'
+	import EmptyView from "../../components/EmptyView/EmptyView.vue"
+	
 	export default {
+		components: {
+			EmptyView
+		},
 		data() {
 			return {
-				dataArray: []
+				isShowEmptyView: false,
+				dataArray: [],
+				page: 1
 			}
 		},
 		onLoad() {
+			// 第一次手动下拉舒心
+			uni.startPullDownRefresh();
+		},
+		onPullDownRefresh() {
+			// 下拉刷新
+			this.page = 1;
+			this.dataArray = [];
+			this.getHistoryData();
+		},
+		onReachBottom() {
+			// 上拉加载
+			this.page++;
 			this.getHistoryData();
 		},
 		methods: {
@@ -24,15 +45,16 @@
 				console.log("历史数据点击");
 			},
 			getHistoryData() {
+				uni.showLoading({
+					mask: true
+				});
 				uni.request({
-					url: helper.websiteUrl + 'history/content/20/1',
+					url: helper.websiteUrl + 'history/content/20/' + this.page,
 					method: 'GET',
 					data: {},
 					success: res => {
 						res = res.data;
-						
-						this.dataArray = [];
-						
+												
 						for (let value of res.results) {
 							let imageUrlArray = this.getImageArrayWithContent(value.content);
 							if (imageUrlArray.length > 0) {
@@ -46,12 +68,17 @@
 					},
 					fail: () => {
 						console.log("请求失败");
+						this.isShowEmptyView = true;
 					},
-					complete: () => {}
+					complete: () => {
+						if (this.page == 1) {
+							uni.stopPullDownRefresh();
+						}
+						uni.hideLoading();
+					}
 				});
 			},
 			getImageArrayWithContent(content) {
-				
 				let imageUrlArray = [];
 				
 				let regex = /<img[^>]+src\s*=\s*['"]([^'"]+)['"][^>]*>/g;
@@ -75,6 +102,12 @@
 					}
 				}
 				return imageUrlArray;
+			},
+			onHandleReloadData() {
+				// 下拉刷新
+				this.page = 1;
+				this.dataArray = [];
+				this.getHistoryData();
 			}
 		}
 	}
@@ -93,6 +126,7 @@
 .wrap-bg {
 	width: 100%;
 	height: 100%;
+	background-color: #f8f8f8;
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: cover;

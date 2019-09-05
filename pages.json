@@ -9,7 +9,8 @@
 		{
 			"path": "pages/history/history",
 			"style": {
-				"navigationBarTitleText": "历史的车轮"
+				"navigationBarTitleText": "历史的车轮",
+				"enablePullDownRefresh": true
 			}
 		},
 		{
