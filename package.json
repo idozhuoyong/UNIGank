@@ -1,0 +1,23 @@
+{
+  "name": "UNIGank",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://idozhuoyong@github.com/idozhuoyong/UNIGank.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/idozhuoyong/UNIGank/issues"
+  },
+  "homepage": "https://github.com/idozhuoyong/UNIGank#readme",
+  "dependencies": {
+    "@dcloudio/uni-ui": "^1.0.1"
+  }
+}

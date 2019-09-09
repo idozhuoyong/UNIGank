@@ -16,7 +16,8 @@
 		{
 			"path": "pages/welfare/welfare",
 			"style": {
-				"navigationBarTitleText": "萌妹子"
+				"navigationBarTitleText": "萌妹子",
+				"enablePullDownRefresh": true
 			}
 		}
 	],
