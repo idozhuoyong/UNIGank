@@ -14,7 +14,7 @@
 				<view class="cell-text"><text space="nbsp" selectable="true">by: {{value.who}}</text></view>
 			</view>
 		</view>
-		<uni-load-more :status="uniLoadingStatus"></uni-load-more>
+		<uni-load-more v-if="isLoadMore" :status="loadStatus"></uni-load-more>
 		<!-- 没有数据提示 -->
 		<empty-view v-if="isShowEmptyView" @onHandleReloadData="onHandleReloadData"></empty-view>
 		<!-- 遮罩 -->
@@ -39,23 +39,26 @@
 				isShowEmptyView: false,
 				isShowCommonLoading: false,
 				isPullDownRefresh: false,
-				isReachBottom: false,
+				// isReachBottom: false,
+				isLoadMore: false,
+				loadStatus: "more",
 				page: 1,
 				dataOriginArray: [],
 				dataArray: [],
 				cellStyle: "",
 				rowCount: 3 , // 每一行图片的数量
-				isShowPreviewImage: false,
-				uniLoadingStatus: "more"
+				isShowPreviewImage: false
 			}
 		},
 		onLoad() {			
-			uni.startPullDownRefresh({});
+			this.isShowCommonLoading = true;
+			this.page = 1;
+			this.getWelfareData();
 		},
 		onPullDownRefresh() {
 			// 下拉刷新
+			this.isShowCommonLoading = true;
 			this.page = 1;
-			this.isPullDownRefresh = true;
 			this.getWelfareData();
 		},
 		onReachBottom() {
@@ -66,12 +69,16 @@
 		},
 		methods: {
 			onHandleReloadData() {
-				uni.startPullDownRefresh({});
+				this.isShowCommonLoading = true;
+				this.page = 1;
+				this.getWelfareData();
 			},
 			getWelfareData() {
-				if (this.isPullDownRefresh) {
-					// 下拉刷新显示遮罩
+				if (this.isShowCommonLoading) {
+					// 下显示遮罩
 					this.isShowCommonLoading = true;
+				} else {
+					this.isShowCommonLoading = false;
 				}
 				uni.request({
 					url: helper.websiteUrl + "data/福利/20/" + this.page,
@@ -117,19 +124,19 @@
 					},
 					fail: () => {
 						// 请求失败
-						if (this.isReachBottom) {
-							this.isReachBottom = false;
-							this.page--;
-						} else {
-							this.isShowEmptyView = true;
-						}
-					},
-					complete: () => {
-						this.uniLoadingStatus = "more";
-						if (this.isPullDownRefresh) {
-							this.isShowCommonLoading = false; // 隐藏遮罩
+						// 关闭遮罩
+						if (this.isShowCommonLoading) { this.isShowCommonLoading = false; } 
+						
+						// 停止下拉刷新
+						if (this.isPullDownRefresh) { 
 							this.isPullDownRefresh = false;
-							uni.stopPullDownRefresh();
+							uni.stopPullDownRefresh(); 
+						}
+						
+						if (this.dataOriginArray.length == 0) {
+							
+						} else {
+							
 						}
 					}
 				});
