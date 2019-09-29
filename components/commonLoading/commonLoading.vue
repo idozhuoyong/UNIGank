@@ -2,7 +2,7 @@
 	<view class="content">
 		<view class="wrap">
 			<view class="arc"></view>
-			<view class="text"><text>LOADING</text></view>
+			<view class="text"><text class="text-content">LOADING</text></view>
 		</view>
 	</view>
 </template>
@@ -99,7 +99,7 @@
 	font-weight: lighter;
 	color: white;
 }
-.text text {
+.text-content {
 	display: none;
 }
 .text::after {

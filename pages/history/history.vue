@@ -5,24 +5,33 @@
 			<view class="wrap-item">{{item.publishedAt}}</view>
 			<view class="wrap-item">{{item.title}}</view>
 		</view>
-		
+		<uni-load-more v-if="isShowLoadMore" :status="loadStatus"></uni-load-more>
+		<!-- 没有数据提示 -->
 		<empty-view v-if="isShowEmptyView" @onHandleReloadData="onHandleReloadData"></empty-view>
+		<!-- 遮罩 -->
+		<common-loading v-if="isShowCommonLoading"></common-loading>
 	</view>
 </template>
 
 <script>
 	import helper from '../../common/helper.js'
 	import EmptyView from "../../components/EmptyView/EmptyView.vue"
+	import commonLoading from '../../components/commonLoading/commonLoading.vue'
+	import uniLoadMore from "@dcloudio/uni-ui/lib/uni-load-more/uni-load-more.vue"
 	
 	export default {
 		components: {
-			EmptyView
+			EmptyView,
+			commonLoading,
+			uniLoadMore
 		},
 		data() {
 			return {
 				isShowEmptyView: false,
+				isShowLoadMore: false,
+				loadStatus: "more",
 				dataArray: [],
-				page: 1
+				page: 1,
 			}
 		},
 		onLoad() {

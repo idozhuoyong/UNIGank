@@ -8,13 +8,13 @@
 				@click="onHandleCellClick(value)"
 				>
 				<image class="cell-image" 
-					src="value.url" 
+					:src="value.url" 
 					mode="scaleToFill">
 				</image>
 				<view class="cell-text"><text space="nbsp" selectable="true">by: {{value.who}}</text></view>
 			</view>
 		</view>
-		<uni-load-more v-if="isLoadMore" :status="loadStatus"></uni-load-more>
+		<uni-load-more v-if="isShowLoadMore" :status="loadStatus"></uni-load-more>
 		<!-- 没有数据提示 -->
 		<empty-view v-if="isShowEmptyView" @onHandleReloadData="onHandleReloadData"></empty-view>
 		<!-- 遮罩 -->
@@ -39,8 +39,8 @@
 				isShowEmptyView: false,
 				isShowCommonLoading: false,
 				isPullDownRefresh: false,
-				// isReachBottom: false,
-				isLoadMore: false,
+				isReachBottom: false,
+				isShowLoadMore: false,
 				loadStatus: "more",
 				page: 1,
 				dataOriginArray: [],
@@ -50,7 +50,7 @@
 				isShowPreviewImage: false
 			}
 		},
-		onLoad() {			
+		onLoad() {
 			this.isShowCommonLoading = true;
 			this.page = 1;
 			this.getWelfareData();
@@ -58,14 +58,17 @@
 		onPullDownRefresh() {
 			// 下拉刷新
 			this.isShowCommonLoading = true;
+			this.isPullDownRefresh = true;
 			this.page = 1;
 			this.getWelfareData();
 		},
 		onReachBottom() {
-			this.page++;
-			this.isReachBottom = true;
-			this.uniLoadingStatus = "loading";
-			this.getWelfareData();
+			if (this.loadStatus != "noMore") {
+				this.page++;
+				this.isReachBottom = true;
+				this.loadStatus = "loading";
+				this.getWelfareData();
+			}
 		},
 		methods: {
 			onHandleReloadData() {
@@ -88,13 +91,18 @@
 						// 请求成功
 						res = res.data
 						console.log(res);
-						if (res.error == false) {
+						if (res.results && res.results.length >= 0) {
 							// 交易成功
-							this.isShowEmptyView = false;
 							if (this.page == 1) {
+								// 加载的第一页数据
 								this.dataOriginArray = [];
 							}
-							if (res.results && res.results.length > 0) {
+							
+							if (res.results.length == 0) {
+								// 没有更多数据了
+								this.loadStatus = "noMore";
+							} else {
+								// 处理请求回来的数据
 								this.dataOriginArray = this.dataOriginArray.concat(res.results);
 								
 								let tempIndex = 0;
@@ -114,32 +122,48 @@
 							}
 						} else {
 							// 交易失败
-							if (this.isReachBottom) {
-								this.isReachBottom = false;
-								this.page--;
-							} else {
-								this.isShowEmptyView = true;
-							}
+							this.onHandleRequestFailData();
 						}
+						this.onRecoverDataFlag();
 					},
 					fail: () => {
 						// 请求失败
-						// 关闭遮罩
-						if (this.isShowCommonLoading) { this.isShowCommonLoading = false; } 
-						
-						// 停止下拉刷新
-						if (this.isPullDownRefresh) { 
-							this.isPullDownRefresh = false;
-							uni.stopPullDownRefresh(); 
-						}
-						
-						if (this.dataOriginArray.length == 0) {
-							
-						} else {
-							
-						}
+						this.onHandleRequestFailData();
+						this.onRecoverDataFlag();
 					}
 				});
+			},
+			onHandleRequestFailData() {
+				// 上拉加载
+				if (this.isReachBottom) { this.page--; }
+			},
+			onRecoverDataFlag() {
+				// 关闭遮罩
+				if (this.isShowCommonLoading) { this.isShowCommonLoading = false; } 
+				
+				// 停止下拉刷新
+				if (this.isPullDownRefresh) { 
+					this.isPullDownRefresh = false;
+					uni.stopPullDownRefresh(); 
+				}
+				
+				// 上拉加载
+				if (this.isReachBottom) { this.isReachBottom = false; }
+				
+				// 空数据页及上拉加载处理
+				if (this.dataOriginArray.length == 0) {
+					this.isShowEmptyView = true;
+					this.isShowLoadMore = false;
+					if (this.loadStatus != "noMore") {
+						this.loadStatus = "more";
+					}
+				} else {
+					this.isShowEmptyView = false;
+					this.isShowLoadMore = true;
+					if (this.loadStatus != "noMore") {
+						this.loadStatus = "more";
+					}
+				}
 			},
 			onHandleCellClick(value) {
 				// console.log(value);
